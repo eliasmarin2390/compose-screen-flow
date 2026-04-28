@@ -78,16 +78,36 @@ fun HomeScreen(viewModel: FinanceViewModel, navController: NavController) {
         item {
             SectionHeader(
                 title = "Metas de Ahorro", 
-                actionText = "Añadir",
-                onActionClick = { showAddGoalDialog = true }
+                actionText = "Ver todas",
+                onActionClick = { /* Navegar a metas */ }
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Row(
+            androidx.compose.foundation.lazy.LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 8.dp)
             ) {
-                viewModel.goals.take(2).forEach { goal ->
-                    GoalCard(goal = goal, modifier = Modifier.weight(1f))
+                items(viewModel.goals) { goal ->
+                    GoalCard(goal = goal, modifier = Modifier.width(200.dp))
+                }
+                item {
+                    Surface(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(160.dp) // Coincidir con la altura de GoalCard aprox
+                            .clickable { showAddGoalDialog = true },
+                        shape = RoundedCornerShape(24.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Text("Nueva Meta", style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
                 }
             }
         }

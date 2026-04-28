@@ -25,6 +25,8 @@ import ni.edu.uam.appnavigatorcompose.viewmodels.FinanceViewModel
 fun LoginScreen(viewModel: FinanceViewModel, onNavigateToRegister: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -65,29 +67,57 @@ fun LoginScreen(viewModel: FinanceViewModel, onNavigateToRegister: () -> Unit) {
 
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { 
+                        email = it
+                        emailError = false
+                    },
                     label = { Text("Correo electrónico") },
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    isError = emailError,
+                    supportingText = {
+                        if (emailError) {
+                            Text("Ingresa un correo válido")
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { 
+                        password = it
+                        passwordError = false
+                    },
                     label = { Text("Contraseña") },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    isError = passwordError,
+                    supportingText = {
+                        if (passwordError) {
+                            Text("La contraseña debe tener al menos 6 caracteres")
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
-                    onClick = { viewModel.login() },
+                    onClick = { 
+                        val isEmailValid = email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                        val isPasswordValid = password.length >= 6
+                        
+                        if (isEmailValid && isPasswordValid) {
+                            viewModel.login() 
+                        } else {
+                            emailError = !isEmailValid
+                            passwordError = !isPasswordValid
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -116,6 +146,10 @@ fun RegisterScreen(viewModel: FinanceViewModel, onNavigateToLogin: () -> Unit) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    
+    var nameError by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -156,42 +190,73 @@ fun RegisterScreen(viewModel: FinanceViewModel, onNavigateToLogin: () -> Unit) {
 
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = { 
+                        name = it
+                        nameError = false
+                    },
                     label = { Text("Nombre completo") },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    isError = nameError,
+                    supportingText = {
+                        if (nameError) Text("El nombre no puede estar vacío")
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { 
+                        email = it
+                        emailError = false
+                    },
                     label = { Text("Correo electrónico") },
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    isError = emailError,
+                    supportingText = {
+                        if (emailError) Text("Ingresa un correo válido")
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { 
+                        password = it
+                        passwordError = false
+                    },
                     label = { Text("Contraseña") },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    isError = passwordError,
+                    supportingText = {
+                        if (passwordError) Text("Mínimo 6 caracteres")
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
                     onClick = { 
-                        viewModel.updateProfile(name, email)
-                        viewModel.login() 
+                        val isNameValid = name.trim().isNotEmpty()
+                        val isEmailValid = email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                        val isPasswordValid = password.length >= 6
+
+                        if (isNameValid && isEmailValid && isPasswordValid) {
+                            viewModel.updateProfile(name, email)
+                            viewModel.login() 
+                        } else {
+                            nameError = !isNameValid
+                            emailError = !isEmailValid
+                            passwordError = !isPasswordValid
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

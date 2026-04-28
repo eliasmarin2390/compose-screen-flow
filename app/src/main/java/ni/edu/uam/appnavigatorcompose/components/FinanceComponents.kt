@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -13,10 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import ni.edu.uam.appnavigatorcompose.models.SavingsGoal
 import ni.edu.uam.appnavigatorcompose.models.Transaction
 import ni.edu.uam.appnavigatorcompose.ui.theme.*
@@ -78,10 +77,14 @@ fun TransactionRow(transaction: Transaction) {
                 Icon(
                     imageVector = when(transaction.iconName) {
                         "Laptop" -> Icons.Default.Laptop
-                        "Wallet" -> Icons.Default.Wallet
+                        "Wallet" -> Icons.Default.AccountBalanceWallet
                         "Coffee" -> Icons.Default.Coffee
                         "Fitness" -> Icons.Default.FitnessCenter
                         "Shopping" -> Icons.Default.ShoppingCart
+                        "Send" -> Icons.AutoMirrored.Filled.Send
+                        "TrendingUp" -> Icons.AutoMirrored.Filled.TrendingUp
+                        "Recarga" -> Icons.Default.AddCircle
+                        "Withdraw" -> Icons.Default.RemoveCircle
                         else -> Icons.Default.SwapHoriz
                     },
                     contentDescription = null,
@@ -118,8 +121,8 @@ fun GoalCard(goal: SavingsGoal, modifier: Modifier = Modifier) {
     val progress = (goal.currentAmount / goal.targetAmount).toFloat()
     val progressPercent = (progress * 100).toInt()
     val accentColor = try {
-        Color(android.graphics.Color.parseColor(goal.colorHex))
-    } catch (e: Exception) {
+        Color(goal.colorHex.toColorInt())
+    } catch (_: Exception) {
         MaterialTheme.colorScheme.primary
     }
 

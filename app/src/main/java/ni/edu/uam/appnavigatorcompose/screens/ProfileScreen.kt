@@ -139,18 +139,55 @@ fun EditProfileDialog(
 ) {
     var name by remember { mutableStateOf(currentName) }
     var email by remember { mutableStateOf(currentEmail) }
+    
+    var nameError by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Editar Perfil") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") })
-                OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = name, 
+                    onValueChange = { 
+                        name = it 
+                        nameError = false
+                    }, 
+                    label = { Text("Nombre") },
+                    isError = nameError,
+                    supportingText = { if (nameError) Text("El nombre no puede estar vacío") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = email, 
+                    onValueChange = { 
+                        email = it 
+                        emailError = false
+                    }, 
+                    label = { Text("Email") },
+                    isError = emailError,
+                    supportingText = { if (emailError) Text("Ingresa un correo válido y diferente al actual") },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(name, email) }) { Text("Guardar") }
+            Button(
+                onClick = { 
+                    val isNameValid = name.trim().isNotEmpty()
+                    val isEmailValid = email.isNotEmpty() && 
+                                     android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
+                                     email != currentEmail
+                    
+                    if (isNameValid && isEmailValid) {
+                        onConfirm(name, email)
+                    } else {
+                        nameError = !isNameValid
+                        emailError = !isEmailValid
+                    }
+                }
+            ) { Text("Guardar") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancelar") }
